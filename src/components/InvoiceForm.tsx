@@ -4,23 +4,21 @@ import React, { useState } from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue} from "./ui/select";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { formSchema } from "@/validations/formSchema";
-import { InvoiceFormInputs } from "@/types";
-import { LucideCloudUpload, Trash2, X } from "lucide-react";
+import { InvoiceFormInputs, Items } from "@/types";
+import { Edit, Eye, LucideCloudUpload, Trash2, X } from "lucide-react";
+import { ItemDialog } from "./ItemDialog";
 
 export const InvoiceForm = () => {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [items, setItems] = useState<Items[]>([]);
+
+  const [dialogMode, setDialogMode] = useState<"add" | "edit" | "view">("add");
+  const [openDialog, setOpenDialog] = useState<boolean>(false)
+  const [selectedItem, setSelectedItem] = useState<any>(null)
 
   const {
     register,
@@ -55,6 +53,28 @@ export const InvoiceForm = () => {
     setLogoPreview(null);
     setValue("logo", null);
   }
+
+  const handleDialog = (mode: "add" | "edit" | "view", item?:unknown) => {
+    setDialogMode(mode)
+    setOpenDialog(true);
+    setSelectedItem(item)
+  }
+
+  const itemSubmit = (data:any) => {
+    if(dialogMode == "add"){
+      setItems([...items, data]);
+    }else if(dialogMode == "edit"){
+      let filteredItem = items.map((item) => item.id == selectedItem.id ? data : item)
+      setItems(filteredItem)
+    }
+  }
+
+  const deleteHandler = (id:string) => {
+    const filteredItems = items.filter((item) => item.id !== id);
+    setItems(filteredItems)
+  }
+
+  console.log("ITEMS",items)
 
   return (
     <div className="flex w-full gap-5">
@@ -178,6 +198,8 @@ export const InvoiceForm = () => {
 
         <hr />
 
+        <div><Button type="button" onClick={() => handleDialog('add')}>Add Item</Button></div>
+
         {/* Items Table */}
         <table className="table-auto w-full border-gray-300">
           <thead className="border-t border-b">
@@ -189,14 +211,20 @@ export const InvoiceForm = () => {
             </tr>
           </thead>
           <tbody>
-            {options.map((item) => (
+            {items.map((item) => (
               <tr key={item.id} className="border-t">
-                <td className="p-2 w-[60%]">{item.name}</td>
-                <td className="p-2 w-[15%]">{item.quantity}</td>
+                <td className="p-2 w-[60%]">{item.itemName}</td>
+                <td className="p-2 w-[10%]">{item.quantity}</td>
                 <td className="p-2 w-[15%]">{item.price}</td>
-                <td className="p-2 w-[10%]">
-                  <Button size="sm" className="bg-red-500">
+                <td className="p-2 w-[15%] flex gap-2">
+                  <Button onClick={() => deleteHandler(item.id)} size="sm" type="button" className="bg-red-500">
                     <Trash2/>
+                  </Button>
+                  <Button onClick={() => handleDialog('edit', item)} size="sm" type="button" className="bg-emerald-500">
+                    <Edit/>
+                  </Button>
+                  <Button onClick={() => handleDialog('view', item)} size="sm" type="button" className="bg-cyan-500">
+                    <Eye/>
                   </Button>
                 </td>
               </tr>
@@ -226,13 +254,13 @@ export const InvoiceForm = () => {
         <hr />
 
         {/* Notes */}
-        <div className="flex flex-col gap-1">
+        {/* <div className="flex flex-col gap-1">
           <label className="font-semibold">Notes</label>
-          <Textarea {...register("notes")} placeholder="Add a note..." />
-          {errors.notes && (
-            <p className="text-red-500 text-sm">{errors.notes.message}</p>
+          <Textarea {...register("note")} placeholder="Add a note..." />
+          {errors.note && (
+            <p className="text-red-500 text-sm">{errors.note.message}</p>
           )}
-        </div>
+        </div> */}
 
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Submitting..." : "Generate Invoice"}
@@ -313,6 +341,8 @@ export const InvoiceForm = () => {
             <p className="text-red-500 text-sm">{errors.tax.message}</p>
           )}
         </label>
+
+        <ItemDialog open={openDialog} mode={dialogMode} onClose={() => setOpenDialog(false)} onItemSubmit={itemSubmit} selected={selectedItem}/>
       </div>
     </div>
   );

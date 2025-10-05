@@ -1,7 +1,7 @@
 export interface InvoiceFormInputs {
   currentDate: string;
-  invoiceNumber: string;
-  dueDate: string;
+  invoiceNumber: number;
+  dueDate: Date;
   billFromName: string;
   billFromEmail: string;
   billFromAddress: string;
@@ -9,9 +9,18 @@ export interface InvoiceFormInputs {
   billToEmail: string;
   billToAddress: string;
   currency: string;
-  discount: string;
-  tax: string;
-  notes: string;
+  discount: number;
+  tax: number;
+  // note?: string;
 
-  logo?: File | null;
+  logo: File;
+}
+
+
+export interface Items {
+  id: string,
+  itemName:string,
+  description:string,
+  quantity: number,
+  price:number
 }

@@ -11,7 +11,7 @@ export const formSchema = yup.object().shape({
 
   dueDate: yup
   .date()
-  .typeError("Please select a valid date")
+  .typeError("Invalid date")
   .required("Due date is required")
   .min(new Date(), "Due date cannot be in the past"),
 
@@ -62,10 +62,32 @@ export const formSchema = yup.object().shape({
     .min(0, "Tax cannot be negative")
     .required("Tax is required"),
 
-  notes: yup.string().max(300, "Notes cannot exceed 300 characters").optional(),
+  // note: yup.string().max(300, "Notes cannot exceed 300 characters").notRequired(),
 
-  logo: yup
-  .mixed()
-  .nullable(),
+  logo: yup.mixed<File>().nullable().required(),
 
 });
+
+export const itemSchema = yup.object().shape({
+  itemName: yup
+    .string()
+    .required("Item name is required")
+    .min(3, "Item Name must be at least 3 characters"),
+
+  description: yup
+    .string()
+    .required("Description is required")
+    .min(5, "Description length must be at least 5 characters"),
+
+  quantity: yup
+    .number()
+    .required("Quantity is required")
+    .typeError("Enter a valid number for Quantity")
+    .min(1, "Quantity can't be less then 1"),
+
+  price: yup
+    .number()
+    .required("Price is required")
+    .typeError("Enter a valid Price")
+    .min(0, "Price cannot be negative"),
+})
