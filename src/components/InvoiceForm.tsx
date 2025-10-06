@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
@@ -11,8 +11,10 @@ import { formSchema } from "@/validations/formSchema";
 import { InvoiceFormInputs, Items } from "@/types";
 import { Edit, Eye, LucideCloudUpload, Trash2, X } from "lucide-react";
 import { ItemDialog } from "./ItemDialog";
+import InvoicePreview from "./InvoicePreview";
 
 export const InvoiceForm = () => {
+  const [formData, setFormData] = useState<InvoiceFormInputs | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [items, setItems] = useState<Items[]>([]);
 
@@ -20,11 +22,14 @@ export const InvoiceForm = () => {
   const [openDialog, setOpenDialog] = useState<boolean>(false)
   const [selectedItem, setSelectedItem] = useState<any>(null)
 
+  const [summary, setSummary] = useState({ subTotal: 0, discount: 0, tax: 0, total: 0});
+
   const {
     register,
     handleSubmit,
     control,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<InvoiceFormInputs>({
     resolver: yupResolver(formSchema),
@@ -33,6 +38,7 @@ export const InvoiceForm = () => {
 
   const onSubmit: SubmitHandler<InvoiceFormInputs> = (data) => {
     console.log(data);
+    setFormData(data);
   };
 
   const options = [
@@ -73,8 +79,25 @@ export const InvoiceForm = () => {
     const filteredItems = items.filter((item) => item.id !== id);
     setItems(filteredItems)
   }
+  
+  const calculation = (items:Items[], formFields:InvoiceFormInputs) => {
+    let subTotal = items.reduce((prev, next) => prev + next.price*next.quantity,0);
+    let discount = (formFields.discount/100)*subTotal || 0
+    let tax = (formFields.tax/100)*subTotal || 0
+    
+    const total = subTotal+tax-discount
+    return {subTotal, discount, tax, total};
+  }
+  
+  const formFields = watch();
+  useEffect(() => {
+      const newSummary = calculation(items, formFields)
+      setSummary(newSummary)
 
-  console.log("ITEMS",items)
+  }, [items, formFields.discount, formFields.tax])
+  
+  
+
 
   return (
     <div className="flex w-full gap-5">
@@ -236,18 +259,18 @@ export const InvoiceForm = () => {
 
         {/* Totals */}
         <div className="w-full flex justify-end">
-          <div className="grid grid-cols-2 gap-x-5">
+          <div className="w-1/2 grid grid-cols-2 gap-x-5">
             <p>Sub Total:</p>
-            <p>₹2000</p>
+            <p>{summary.subTotal}</p>
             <p>Discount:</p>
-            <p>10%</p>
+            <p>({formFields.discount}%){summary.discount}</p>
             <p>Tax:</p>
-            <p>15%</p>
+            <p>({formFields.tax}%){summary.tax}</p>
             <p className="col-span-2">
               <hr />
             </p>
             <p>Total:</p>
-            <p>₹50,000</p>
+            <p>{(summary.total).toLocaleString()}</p>
           </div>
         </div>
 
