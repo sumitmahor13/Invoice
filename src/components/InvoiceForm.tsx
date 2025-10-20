@@ -3,24 +3,23 @@
 import React, { useEffect, useState } from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue} from "./ui/select";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { formSchema } from "@/validations/formSchema";
 import { InvoiceFormInputs, Items } from "@/types";
-import { Edit, Eye, LucideCloudUpload, Trash2, X } from "lucide-react";
+import { Edit, Eye, LucideCloudUpload, Plus, Trash2, X } from "lucide-react";
 import { ItemDialog } from "./ItemDialog";
 import InvoicePreview from "./InvoicePreview";
 
 export const InvoiceForm = () => {
-  const [formData, setFormData] = useState<InvoiceFormInputs | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [items, setItems] = useState<Items[]>([]);
 
-  const [dialogMode, setDialogMode] = useState<"add" | "edit" | "view">("add");
+  const [dialogMode, setDialogMode] = useState<"add" | "edit">("add");
   const [openDialog, setOpenDialog] = useState<boolean>(false)
   const [selectedItem, setSelectedItem] = useState<any>(null)
+  const [preview, setPreview] = useState<boolean>(false);
 
   const [summary, setSummary] = useState({ subTotal: 0, discount: 0, tax: 0, total: 0});
 
@@ -37,15 +36,10 @@ export const InvoiceForm = () => {
   });
 
   const onSubmit: SubmitHandler<InvoiceFormInputs> = (data) => {
+    setPreview(true)
     console.log(data);
-    setFormData(data);
-  };
 
-  const options = [
-    { id: 1, name: "Apple", quantity: 10, price: "$5" },
-    { id: 2, name: "Orange", quantity: 6, price: "$3" },
-    { id: 3, name: "Banana", quantity: 12, price: "$4" },
-  ];
+  };
 
   const handleLogo = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -60,7 +54,7 @@ export const InvoiceForm = () => {
     setValue("logo", null);
   }
 
-  const handleDialog = (mode: "add" | "edit" | "view", item?:unknown) => {
+  const handleDialog = (mode: "add" | "edit", item?:unknown) => {
     setDialogMode(mode)
     setOpenDialog(true);
     setSelectedItem(item)
@@ -96,37 +90,38 @@ export const InvoiceForm = () => {
 
   }, [items, formFields.discount, formFields.tax])
   
-  
-
-
   return (
     <div className="flex w-full gap-5">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-[80%] p-6 flex flex-col gap-5 bg-white dark:bg-gray-800 rounded-lg shadow-md"
+        className="w-[80%] p-6 flex flex-col gap-5 bg-white dark:bg-gray-800 rounded-lg shadow-sm"
       >
         {/* Current Date + Invoice Number */}
         <div className="flex flex-col gap-2">
           <div className="w-full flex justify-between">
             <div className="flex flex-col gap-1">
               <label className="font-semibold">Current Date</label>
-              <Input
+              <div className="w-40">
+                <Input
                 type="text"
                 disabled
                 {...register("currentDate")}
                 defaultValue={new Date().toLocaleDateString()}
               />
+              </div>
             </div>
 
             <div className="flex flex-col gap-1">
               <label className="font-semibold">Invoice No.</label>
-              <Input
+              <div className="w-20">
+                <Input
                 {...register("invoiceNumber")}
                 type="text"
-                placeholder="012234"
+                placeholder="123456"
               />
+              </div>
               {errors.invoiceNumber && (
-                <p className="text-red-500 text-sm">
+                <p className="text-red-500 text-xs">
                   {errors.invoiceNumber.message}
                 </p>
               )}
@@ -135,11 +130,11 @@ export const InvoiceForm = () => {
 
           <div className="flex w-48 flex-col gap-1">
             <label className="font-semibold">Due Date</label>
-            <div>
+            <div className="w-40">
               <Input {...register("dueDate")} type="date" />
             </div>
             {errors.dueDate && (
-              <p className="text-red-500 text-sm">{errors.dueDate.message}</p>
+              <p className="text-red-500 text-xs">{errors.dueDate.message}</p>
             )}
           </div>
         </div>
@@ -157,7 +152,7 @@ export const InvoiceForm = () => {
               placeholder="Name"
             />
             {errors.billFromName && (
-              <p className="text-red-500 text-sm">
+              <p className="text-red-500 text-xs">
                 {errors.billFromName.message}
               </p>
             )}
@@ -168,7 +163,7 @@ export const InvoiceForm = () => {
               placeholder="Email"
             />
             {errors.billFromEmail && (
-              <p className="text-red-500 text-sm">
+              <p className="text-red-500 text-xs">
                 {errors.billFromEmail.message}
               </p>
             )}
@@ -179,7 +174,7 @@ export const InvoiceForm = () => {
               placeholder="Address"
             />
             {errors.billFromAddress && (
-              <p className="text-red-500 text-sm">
+              <p className="text-red-500 text-xs">
                 {errors.billFromAddress.message}
               </p>
             )}
@@ -190,7 +185,7 @@ export const InvoiceForm = () => {
             <p className="font-semibold">Bill To:</p>
             <Input {...register("billToName")} type="text" placeholder="Name" />
             {errors.billToName && (
-              <p className="text-red-500 text-sm">
+              <p className="text-red-500 text-xs">
                 {errors.billToName.message}
               </p>
             )}
@@ -201,7 +196,7 @@ export const InvoiceForm = () => {
               placeholder="Email"
             />
             {errors.billToEmail && (
-              <p className="text-red-500 text-sm">
+              <p className="text-red-500 text-xs">
                 {errors.billToEmail.message}
               </p>
             )}
@@ -212,7 +207,7 @@ export const InvoiceForm = () => {
               placeholder="Address"
             />
             {errors.billToAddress && (
-              <p className="text-red-500 text-sm">
+              <p className="text-red-500 text-xs">
                 {errors.billToAddress.message}
               </p>
             )}
@@ -221,56 +216,77 @@ export const InvoiceForm = () => {
 
         <hr />
 
-        <div><Button type="button" onClick={() => handleDialog('add')}>Add Item</Button></div>
+        <div><Button type="button" onClick={() => handleDialog('add')}><Plus/>Add Item</Button></div>
 
         {/* Items Table */}
-        <table className="table-auto w-full border-gray-300">
-          <thead className="border-t border-b">
-            <tr className="bg-gray-100">
-              <th className="text-left border p-2 w-[80%]">ITEM</th>
-              <th className="text-left border p-2 w-[5%]">QTY</th>
-              <th className="text-left border p-2 w-[10%]">PRICE</th>
-              <th className="text-left border p-2 w-[5%]">ACTION</th>
+
+        <table className="w-full text-left border-t border-b border-[#d1d5dc] mb-6">
+          <thead className="bg-[#f3f4f6]">
+            <tr>
+              <th className="p-2 font-semibold w-[70%]">Item</th>
+              <th className="p-2 font-semibold w-[10%]">Qty</th>
+              <th className="p-2 font-semibold w-[10%]">Price</th>
+              <th className="p-2 font-semibold w-[10%]">Action</th>
             </tr>
           </thead>
           <tbody>
-            {items.map((item) => (
-              <tr key={item.id} className="border-t">
-                <td className="p-2 w-[60%]">{item.itemName}</td>
-                <td className="p-2 w-[10%]">{item.quantity}</td>
-                <td className="p-2 w-[15%]">{item.price}</td>
-                <td className="p-2 w-[15%] flex gap-2">
-                  <Button onClick={() => deleteHandler(item.id)} size="sm" type="button" className="bg-red-500">
-                    <Trash2/>
-                  </Button>
-                  <Button onClick={() => handleDialog('edit', item)} size="sm" type="button" className="bg-emerald-500">
-                    <Edit/>
-                  </Button>
-                  <Button onClick={() => handleDialog('view', item)} size="sm" type="button" className="bg-cyan-500">
-                    <Eye/>
-                  </Button>
+            {items.length > 0 ? (
+              items.map((item) => (
+                <tr key={item.id} className="border-t border-[#e5e7eb]">
+                  <td className="p-2">
+                    <p className="text-sm font-medium">{item.itemName}</p>
+                    <p className="text-[12px] text-gray-500">{item.description}</p>
+                  </td>
+                  <td className="p-2">{item.quantity}</td>
+                  <td className="p-2">
+                    {item.price.toFixed(2)}
+                  </td>
+                  <td className="p-2">
+                    <div className="flex gap-1 items-center">
+                      <div onClick={() => deleteHandler(item.id)} className="text-red-500"><Trash2 size={20}/></div>
+                      <div onClick={() => handleDialog('edit', item)} className="text-emerald-500"><Edit size={20}/></div>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={4} className="p-4 text-center text-[#99a1af]">
+                  No items added yet
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
 
-        <hr />
-
         {/* Totals */}
-        <div className="w-full flex justify-end">
-          <div className="w-1/2 grid grid-cols-2 gap-x-5">
-            <p>Sub Total:</p>
-            <p>{summary.subTotal}</p>
-            <p>Discount:</p>
-            <p>({formFields.discount}%){summary.discount}</p>
-            <p>Tax:</p>
-            <p>({formFields.tax}%){summary.tax}</p>
-            <p className="col-span-2">
-              <hr />
-            </p>
-            <p>Total:</p>
-            <p>{(summary.total).toLocaleString()}</p>
+        <div className="flex justify-end">
+          <div className="w-1/2 text-sm">
+            <div className="flex justify-between py-1">
+              <span>Subtotal</span>
+              <span>
+                {formFields.currency} {summary.subTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            </div>
+            <div className="flex justify-between py-1">
+              <span>Discount ({formFields.discount}%)</span>
+              <span>
+                - {formFields.currency} {summary.discount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            </div>
+            <div className="flex justify-between py-1">
+              <span>Tax ({formFields.tax}%)</span>
+              <span>
+                + {formFields.currency} {summary.tax.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            </div>
+            <hr className="my-2" />
+            <div className="flex justify-between font-semibold text-lg">
+              <span>Total</span>
+              <span>
+                {formFields.currency} {summary.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -336,9 +352,12 @@ export const InvoiceForm = () => {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Currency</SelectLabel>
-                    <SelectItem value="INR">₹ (INR)</SelectItem>
-                    <SelectItem value="USD">$ (USD)</SelectItem>
-                    <SelectItem value="EUR">€ (EUR)</SelectItem>
+                    <SelectItem value="₹">₹ (INR)</SelectItem>
+                    <SelectItem value="$">$ (USD)</SelectItem>
+                    <SelectItem value="€">€ (EUR)</SelectItem>
+                    <SelectItem value="£">£ (GBP)</SelectItem>
+                    <SelectItem value="¥">¥ (JPY)</SelectItem>
+                    <SelectItem value="₿">₿ (BTC)</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -367,6 +386,19 @@ export const InvoiceForm = () => {
 
         <ItemDialog open={openDialog} mode={dialogMode} onClose={() => setOpenDialog(false)} onItemSubmit={itemSubmit} selected={selectedItem}/>
       </div>
+
+      {preview && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-60 flex justify-center items-center p-6 overflow-auto">
+          <InvoicePreview
+            logo={logoPreview}
+            formData={formFields}
+            items={items}
+            summary={summary}
+            setPreview={setPreview}
+          />
+        </div>
+      )}
+
     </div>
   );
 };
