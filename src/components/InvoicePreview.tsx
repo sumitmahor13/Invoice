@@ -4,8 +4,6 @@ import React, { useRef } from "react";
 import Image from "next/image";
 import { Items, InvoiceFormInputs } from "@/types";
 import { Button } from "./ui/button";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import { useReactToPrint } from "react-to-print";
 
 interface InvoicePreviewProps {
@@ -33,9 +31,9 @@ const InvoicePreview: React.FC<InvoicePreviewProps> = ({ logo, formData, items, 
           <div className="flex flex-col gap-1">
             <h1 className="text-4xl font-bold">Invoice</h1>
             <p className="text-sm text-[#6a7282]">
-              Date: {formData.currentDate} | Invoice #: {formData.invoiceNumber}
+              Date: {formData.currentDate} | Invoice : #{formData.invoiceNumber}
             </p>
-            <p className="text-sm text-[#6a7282]">Due: {formData.dueDate}</p>
+            <p className="text-sm text-[#6a7282]">Due: {new Date(formData.dueDate).toLocaleDateString('en-US')}</p>
           </div>
 
           <div className="text-right">
@@ -70,17 +68,20 @@ const InvoicePreview: React.FC<InvoicePreviewProps> = ({ logo, formData, items, 
         <table className="w-full text-left border-t border-b border-[#d1d5dc] mb-6">
           <thead className="bg-[#f3f4f6]">
             <tr>
-              <th className="p-2 font-semibold">Item</th>
-              <th className="p-2 font-semibold">Qty</th>
-              <th className="p-2 font-semibold">Price</th>
-              <th className="p-2 font-semibold text-right">Total</th>
+              <th className="p-2 font-semibold w-[60%]">Item</th>
+              <th className="p-2 font-semibold w-[10%]">Qty</th>
+              <th className="p-2 font-semibold w-[10%]">Price</th>
+              <th className="p-2 font-semibold text-right w-[20%]">Total</th>
             </tr>
           </thead>
           <tbody>
             {items.length > 0 ? (
               items.map((item) => (
                 <tr key={item.id} className="border-t border-[#e5e7eb]">
-                  <td className="p-2">{item.itemName}</td>
+                  <td className="p-2">
+                    <p className="text-sm font-medium">{item.itemName}</p>
+                    <p className="text-[12px] text-gray-500">{item.description}</p>
+                  </td>
                   <td className="p-2">{item.quantity}</td>
                   <td className="p-2">
                     {formData.currency} {item.price.toFixed(2)}

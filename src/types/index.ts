@@ -1,7 +1,7 @@
 export interface InvoiceFormInputs {
   currentDate: string;
   invoiceNumber: number;
-  dueDate: Date;
+  dueDate: Date ;
   billFromName: string;
   billFromEmail: string;
   billFromAddress: string;
@@ -12,8 +12,7 @@ export interface InvoiceFormInputs {
   discount: number;
   tax: number;
   // note?: string;
-
-  logo: File;
+  logo: File ;
 }
 
 

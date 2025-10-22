@@ -46,7 +46,7 @@ export default function Home() {
               </div>
               <p className="mt-3 text-gray-600 text-sm md:text-[1.2rem]">The ultimate toolkit for creating professional invoices for your Bussiness. Generate beautiful Invoices, Layout with logo upload, and proper calculation in seconds.</p>
               <Link href={"/invoice"}>
-                <Button className="text-sm md:text-md mt-4 bg-gradient-to-r from-fuchsia-500 to-cyan-500 text-white md:w-60 md:h-12 rounded-lg border border-gray-400 ">
+                <Button className="cursor-pointer text-sm md:text-md mt-4 bg-gradient-to-r from-fuchsia-500 to-cyan-500 text-white md:w-60 md:h-12 rounded-lg border border-gray-400 ">
                   Generate Invoice <ArrowRight size={40}/>
                 </Button>
               </Link>

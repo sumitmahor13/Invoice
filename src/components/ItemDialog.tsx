@@ -83,7 +83,7 @@ export const ItemDialog = ({
               done.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4">
+          <div className="grid gap-4 mb-3">
             <div className="grid gap-3">
               <Label htmlFor="itemName">Item Name</Label>
               <Input
