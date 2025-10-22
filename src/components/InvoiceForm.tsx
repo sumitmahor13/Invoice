@@ -91,10 +91,10 @@ export const InvoiceForm = () => {
   }, [items, formFields.discount, formFields.tax])
   
   return (
-    <div className="flex w-full gap-5">
+    <div className="flex flex-col-reverse md:flex-row w-full gap-5">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-[80%] p-6 flex flex-col gap-5 bg-white dark:bg-gray-800 rounded-lg shadow-sm"
+        className="w-full md:w-[80%] p-6 flex flex-col gap-5 bg-white dark:bg-gray-800 rounded-lg shadow-sm"
       >
         {/* Current Date + Invoice Number */}
         <div className="flex flex-col gap-2">
@@ -142,9 +142,9 @@ export const InvoiceForm = () => {
         <hr />
 
         {/* Bill From & Bill To */}
-        <div className="flex w-full gap-5">
+        <div className="flex flex-col sm:flex-row w-full gap-5">
           {/* Bill From */}
-          <div className="flex w-1/2 flex-col gap-2">
+          <div className="flex sm:w-1/2 flex-col gap-2">
             <p className="font-semibold">Bill From:</p>
             <Input
               {...register("billFromName")}
@@ -181,7 +181,7 @@ export const InvoiceForm = () => {
           </div>
 
           {/* Bill To */}
-          <div className="flex w-1/2 flex-col gap-2">
+          <div className="flex sm:w-1/2 flex-col gap-2">
             <p className="font-semibold">Bill To:</p>
             <Input {...register("billToName")} type="text" placeholder="Name" />
             {errors.billToName && (
@@ -307,7 +307,7 @@ export const InvoiceForm = () => {
       </form>
 
       {/* Sidebar */}
-      <div className="w-[20%] p-6 flex flex-col gap-3 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+      <div className="w-full md:w-[20%] p-6 flex flex-col gap-3 bg-white dark:bg-gray-800 rounded-lg shadow-md">
         {/* Image */}
         <div className="flex flex-col gap-2">
           <label className="font-semibold">Company Logo</label>
@@ -341,12 +341,13 @@ export const InvoiceForm = () => {
 
         <label>
           <p className="font-bold">Currency</p>
+
           <Controller
             name="currency"
             control={control}
             render={({ field }) => (
               <Select onValueChange={field.onChange} value={field.value}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-full outline-none bg-[#FAFAFA]">
                   <SelectValue placeholder="Select currency" />
                 </SelectTrigger>
                 <SelectContent>

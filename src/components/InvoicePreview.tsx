@@ -26,8 +26,8 @@ const InvoicePreview: React.FC<InvoicePreviewProps> = ({ logo, formData, items, 
   const handlePrint = useReactToPrint({ contentRef });
 
   return (
-    <div className="w-10/12 flex flex-col gap-5">
-      <div ref={contentRef} id="invoice" className="bg-[#fff] p-10 rounded-lg w-full max-w-4xl mx-auto text-[#1e2939] font-sans">
+    <div className="max-w-full flex flex-col gap-5">
+      <div ref={contentRef} id="invoice" className="bg-[#fff] p-10 rounded-lg min-w-[1024px] max-w-4xl mx-auto text-[#1e2939] font-sans">
         {/* Header */}
         <div className="flex justify-between items-start border-b pb-6 mb-6">
           <div className="flex flex-col gap-1">
@@ -86,7 +86,7 @@ const InvoicePreview: React.FC<InvoicePreviewProps> = ({ logo, formData, items, 
                     {formData.currency} {item.price.toFixed(2)}
                   </td>
                   <td className="p-2 text-right">
-                    {formData.currency} {(item.price * item.quantity).toFixed(2)}
+                    {formData.currency} {(item.price * item.quantity).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
                 </tr>
               ))
